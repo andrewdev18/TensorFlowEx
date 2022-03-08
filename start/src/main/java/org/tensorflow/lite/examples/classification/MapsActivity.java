@@ -45,8 +45,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     ImageView flagImage;
 
     private String name = "Waiting data";
-    private String flagURL;
-    private String details;
 
 
     @Override
@@ -69,19 +67,19 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
 
+        assignScreenElements();
         getJsonData();
         loadScreenData();
     }
 
-
-    private void loadScreenData(){
+    private void assignScreenElements(){
         descriptionView = findViewById(R.id.descripcion);
         nameView = findViewById(R.id.name);
         flagImage = findViewById(R.id.flag);
+    }
 
-        descriptionView.setText(details);
-        nameView.setText(name);
-        flagURL = "http://www.geognos.com/api/en/countries/flag/" + countryCode + ".png";
+    private void loadScreenData(){
+        String flagURL = "http://www.geognos.com/api/en/countries/flag/" + countryCode + ".png";
 
         Glide.with(this)
                 .load(flagURL)
@@ -99,22 +97,33 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     }
 
     private void getJsonData() {
-
+        String url = "http://www.geognos.com/api/en/countries/info/" + countryCode + ".json";
         StringRequest request = new StringRequest(
-                Request.Method.GET, "http://www.geognos.com/api/en/countries/info/" + countryCode + ".json",
+                Request.Method.GET, url,
                 new com.android.volley.Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
                         int size = response.length();
                         response = fixEncoding(response);
+                        //descriptionView.setText(response);
 
                         try {
                             JSONObject mainObject = new JSONObject(response);
                             JSONObject results = mainObject.getJSONObject("Results");
+                            JSONObject capital = results.getJSONObject("Capital");
+                            String name = results.getString("Name");
+                            Toast.makeText(getApplicationContext(), "Pais: " + name, Toast.LENGTH_LONG).show();
 
-                            name = results.getString("Name");
-                            details = response;
+                            if(name == null){
+                                name = "Sin datos";
+                            }
+                            nameView.setText(name);
 
+                            descriptionView.setText("");
+                            descriptionView.append("Pais: " + results.getString("Name") + "\n");
+                            descriptionView.append("Capital: " + capital.getString("Name") + "\n");
+                            descriptionView.append("Codigo de telefono: " + results.getString("TelPref") + "\n");
+                            descriptionView.append("Informacion: " + results.getString("CountryInfo") + "\n");
                         } catch (JSONException e) {
                             Toast.makeText(getApplicationContext(), "No hubo respuesta", Toast.LENGTH_LONG).show();
                             //responseText.setText(e.getMessage());
