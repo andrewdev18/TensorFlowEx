@@ -25,6 +25,7 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.tensorflow.lite.examples.classification.databinding.ActivityMapviewBinding;
@@ -45,7 +46,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     ImageView flagImage;
 
     private String name = "Waiting data";
-
+    private double latitud = 0;
+    private double longitud = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -62,14 +64,15 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         binding = ActivityMapviewBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
+        assignScreenElements();
+        getJsonData();
+        loadScreenData();
+
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
 
-        assignScreenElements();
-        getJsonData();
-        loadScreenData();
     }
 
     private void assignScreenElements(){
@@ -90,10 +93,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
 
-        // Add a marker in Sydney and move the camera
-        LatLng sydney = new LatLng(-34, 151);
-        mMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney"));
-        mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
+        LatLng country = new LatLng(latitud, longitud);
+        mMap.moveCamera(CameraUpdateFactory.newLatLng(country));
     }
 
     private void getJsonData() {
@@ -111,8 +112,13 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                             JSONObject mainObject = new JSONObject(response);
                             JSONObject results = mainObject.getJSONObject("Results");
                             JSONObject capital = results.getJSONObject("Capital");
+                            JSONArray geoPoint = results.getJSONArray("GeoPt");
+
+                            latitud = Double.valueOf(geoPoint.getString(0));
+                            longitud = Double.valueOf(geoPoint.getString(1));
+
                             String name = results.getString("Name");
-                            Toast.makeText(getApplicationContext(), "Pais: " + name, Toast.LENGTH_LONG).show();
+                            Toast.makeText(getApplicationContext(), "Pais: " + name + " En " + latitud + " " + longitud, Toast.LENGTH_LONG).show();
 
                             if(name == null){
                                 name = "Sin datos";
