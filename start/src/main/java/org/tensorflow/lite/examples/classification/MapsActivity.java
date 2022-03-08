@@ -27,12 +27,16 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.gson.Gson;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.tensorflow.lite.examples.classification.databinding.ActivityMapviewBinding;
 
+import java.io.Console;
 import java.io.UnsupportedEncodingException;
 import java.util.HashMap;
 import java.util.Map;
@@ -71,8 +75,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         mapFragment.getMapAsync(this);
 
         responseText = findViewById(R.id.txtResponse);
+        nameView = findViewById(R.id.name);
 
-        getData();
+        getJsonData();
         //loadScreenData();
     }
 
@@ -91,7 +96,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
     }
 
-    private void getData() {
+    private void getJsonData() {
 
         StringRequest request = new StringRequest(
                 Request.Method.GET, "http://www.geognos.com/api/en/countries/info/" + countryCode + ".json",
@@ -101,6 +106,23 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                         int size = response.length();
                         response = fixEncoding(response);
                         responseText.setText(response);
+
+                        try {
+                            JSONObject mainObject = new JSONObject(response);
+                            JSONObject results = mainObject.getJSONObject("Results");
+                            String name = results.getString("Name");
+                            Toast.makeText(getApplicationContext(), "Pais: " + name, Toast.LENGTH_LONG).show();
+
+                            if(name == null){
+                                name = "Sin datos";
+                            }
+                            nameView.setText(name);
+                        } catch (JSONException e) {
+                            Toast.makeText(getApplicationContext(), "No hubo respuesta", Toast.LENGTH_LONG).show();
+                            //responseText.setText(e.getMessage());
+                        }
+
+
                         Log.d("respuesta api ", response);
                     }
                 },
