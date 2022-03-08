@@ -47,9 +47,9 @@
         android:layout_weight="1">
 
         <TextView
-            android:id="@+id/txtResponse"
+            android:id="@+id/descripcion"
             android:layout_width="wrap_content"
-            android:layout_height="189dp"
+            android:layout_height="match_parent"
             android:layout_weight="1"
             android:text="TextView" />
     </LinearLayout>

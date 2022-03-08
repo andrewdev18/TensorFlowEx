@@ -1,42 +1,34 @@
 package org.tensorflow.lite.examples.classification;
 
 import androidx.annotation.Nullable;
-import androidx.camera.core.internal.utils.ImageUtil;
 import androidx.fragment.app.FragmentActivity;
-import androidx.recyclerview.widget.LinearLayoutManager;
 
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
-import com.android.volley.Response;
 import com.android.volley.VolleyError;
-import com.android.volley.toolbox.JsonArrayRequest;
-import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
+import com.bumptech.glide.Glide;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
-import com.google.gson.Gson;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
 
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.tensorflow.lite.examples.classification.databinding.ActivityMapviewBinding;
 
-import java.io.Console;
 import java.io.UnsupportedEncodingException;
 import java.util.HashMap;
 import java.util.Map;
@@ -49,10 +41,13 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     RequestQueue requestQueue;
 
     TextView nameView;
-    TextView responseText;
+    TextView descriptionView;
+    ImageView flagImage;
 
     private String name = "Waiting data";
     private String flagURL;
+    private String details;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -74,16 +69,23 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
 
-        responseText = findViewById(R.id.txtResponse);
-        nameView = findViewById(R.id.name);
-
         getJsonData();
-        //loadScreenData();
+        loadScreenData();
     }
 
+
     private void loadScreenData(){
+        descriptionView = findViewById(R.id.descripcion);
         nameView = findViewById(R.id.name);
+        flagImage = findViewById(R.id.flag);
+
+        descriptionView.setText(details);
         nameView.setText(name);
+        flagURL = "http://www.geognos.com/api/en/countries/flag/" + countryCode + ".png";
+
+        Glide.with(this)
+                .load(flagURL)
+                .into(flagImage);
     }
 
     @Override
@@ -105,18 +107,14 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     public void onResponse(String response) {
                         int size = response.length();
                         response = fixEncoding(response);
-                        responseText.setText(response);
 
                         try {
                             JSONObject mainObject = new JSONObject(response);
                             JSONObject results = mainObject.getJSONObject("Results");
-                            String name = results.getString("Name");
-                            Toast.makeText(getApplicationContext(), "Pais: " + name, Toast.LENGTH_LONG).show();
 
-                            if(name == null){
-                                name = "Sin datos";
-                            }
-                            nameView.setText(name);
+                            name = results.getString("Name");
+                            details = response;
+
                         } catch (JSONException e) {
                             Toast.makeText(getApplicationContext(), "No hubo respuesta", Toast.LENGTH_LONG).show();
                             //responseText.setText(e.getMessage());
