@@ -1,4 +1,4 @@
-[
+{
     "BD": {
       "Name": "Bangladesh",
       "Capital": {
@@ -7826,5 +7826,4 @@
       },
       "CountryInfo": "http://www.geognos.com/geo/en/cc/mz.html"
     }
-  }
-]
+}
