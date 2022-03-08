@@ -1,6 +1,4 @@
-{
-  "StatusMsg": "OK",
-  "Results": {
+[
     "BD": {
       "Name": "Bangladesh",
       "Capital": {
@@ -7828,6 +7826,5 @@
       },
       "CountryInfo": "http://www.geognos.com/geo/en/cc/mz.html"
     }
-  },
-  "StatusCode": 200
-}
+  }
+]
