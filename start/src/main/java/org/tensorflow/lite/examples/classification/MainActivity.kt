@@ -19,12 +19,14 @@ package org.tensorflow.lite.examples.classification
 import android.Manifest
 import android.annotation.SuppressLint
 import android.content.Context
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.graphics.Matrix
 import android.os.Bundle
 import android.util.Log
 import android.util.Size
+import android.widget.Button
 import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
@@ -39,6 +41,7 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.RecyclerView
+import com.android.volley.toolbox.Volley
 import org.tensorflow.lite.examples.classification.ml.Flags
 import org.tensorflow.lite.examples.classification.ml.LugaresQuevedo
 import org.tensorflow.lite.examples.classification.ui.RecognitionAdapter
@@ -50,10 +53,12 @@ import java.util.concurrent.Executors
 import kotlin.random.Random
 
 // Constants
-private const val MAX_RESULT_DISPLAY = 3 // Maximum number of results displayed
+private const val MAX_RESULT_DISPLAY = 1 // Maximum number of results displayed
 private const val TAG = "TFL Classify" // Name for logging
 private const val REQUEST_CODE_PERMISSIONS = 999 // Return code after asking for permission
 private val REQUIRED_PERMISSIONS = arrayOf(Manifest.permission.CAMERA) // permission needed
+
+private var COUNTRY_CODE = "";
 
 // Listener for the result of the ImageAnalyzer
 typealias RecognitionListener = (recognition: List<Recognition>) -> Unit
@@ -83,6 +88,14 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+
+        val btn_link = findViewById(R.id.BtnLink) as Button;
+        btn_link.setOnClickListener {
+            val intent = Intent(this, MapsActivity::class.java).apply {
+                putExtra("countrycode", COUNTRY_CODE)
+            }
+            startActivity(intent)
+        }
 
         // Request camera permissions
         if (allPermissionsGranted()) {
@@ -237,6 +250,7 @@ class MainActivity : AppCompatActivity() {
             // END - Placeholder code at the start of the codelab. Comment this block of code out.
 
             for (output in outputs) {
+                COUNTRY_CODE = output.label;
                 items.add(Recognition(output.label, output.score))
             }
             // Return the result

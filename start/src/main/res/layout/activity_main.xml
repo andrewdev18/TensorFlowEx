@@ -40,7 +40,16 @@
                     android:layout_height="wrap_content"
                     android:src="@drawable/tfl2_logo"
                     android:contentDescription="@string/tensorflow_lite_logo_description" />
+
+                <Button
+                    android:id="@+id/BtnLink"
+                    android:layout_height="wrap_content"
+                    android:layout_width="100dp"
+                    android:layout_marginLeft="30dp"
+                    android:text="VER DETALLES"/>
         </androidx.appcompat.widget.Toolbar>
+
+
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/recognitionResults"
@@ -48,5 +57,6 @@
             android:layout_height="wrap_content"
             android:layout_gravity="bottom"
             android:orientation="vertical"
-            app:layoutManager="LinearLayoutManager"  />
+            app:layoutManager="LinearLayoutManager"/>
+
 </merge>
