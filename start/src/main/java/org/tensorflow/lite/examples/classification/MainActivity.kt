@@ -88,7 +88,6 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-
         val btn_link = findViewById(R.id.BtnLink) as Button;
         btn_link.setOnClickListener {
             val intent = Intent(this, MapsActivity::class.java).apply {
